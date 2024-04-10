@@ -1,1 +1,9 @@
+* {
+  padding: 0;
+  margin: 0;
+}
 
+body {
+  background-image: url("jickaro230200336.jpg");
+  background-size: cover; /* Adjusts the background image to cover the entire canvas */
+}
