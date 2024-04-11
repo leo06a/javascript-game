@@ -1,6 +1,6 @@
 const canvas = document.getElementById('gameCanvas');
 canvas.width = window.innerWidth - 50;
-canvas.height = window.innerHeight - 50;
+canvas.height = window.innerHeight -5;
 
 class Player {
     constructor(x, y, radius, gravity) {
@@ -24,6 +24,12 @@ class Player {
         if (this.y + this.radius > canvas.height) {
             this.y = canvas.height - this.radius;
             this.speedY = 0;      
+        }
+
+        // Prevent player from flying away upwards
+        if (this.y - this.radius < 0) {
+            this.y = this.radius;
+            this.speedY = 0;
         }
     }
 
