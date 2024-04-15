@@ -1,6 +1,24 @@
 const canvas = document.getElementById('gameCanvas');
+let c = canvas.getContext('2d')
 canvas.width = window.innerWidth - 50;
 canvas.height = window.innerHeight -5;
+
+arr = []
+obstacleWidth = 60
+obstacleHeight = 500
+obstacleX = canvas.width
+obstacleY = 0
+
+function e() {
+    let random = obstacleY - obstacleHeight/4 - Math.random()*(obstacleHeight/2)
+    let top = {
+        x: obstacleX,
+        y: random,
+        width: obstacleWidth,
+        height: obstacleHeight,
+    }
+    arr.push(top)
+}
 
 class Player {
     constructor(x, y, radius, gravity) {
@@ -23,7 +41,7 @@ class Player {
         // Prevent player from falling through the ground
         if (this.y + this.radius > canvas.height) {
             this.y = canvas.height - this.radius;
-            this.speedY = 0;      
+            this.speedY = 0;
         }
 
         // Prevent player from flying away upwards
@@ -41,65 +59,37 @@ class Player {
     }
 }
 
-class Obstacle {
-    constructor(x, gapHeight, speed, width, canvasHeight) {
-        this.x = x;
-        this.gapHeight = gapHeight;
-        this.speed = speed;
-        this.width = width;
-        this.canvasHeight = canvasHeight;
-    }
-
-    move() {
-        this.x -= this.speed;
-    }
-
-    reset(canvasWidth) {
-        if (this.x + this.width < 0) {
-            this.x = canvasWidth;
-            this.gapHeight = Math.random() * (this.canvasHeight - 200) + 100; // Ensure a minimum gap height of 100
-        }
-    }
-
-    draw(ctx) {
-        ctx.fillStyle = 'black';
-        ctx.fillRect(this.x, 0, this.width, this.canvasHeight - this.gapHeight);
-        ctx.fillRect(this.x, this.canvasHeight - this.gapHeight, this.width, this.gapHeight);
-    }
-}
 
 class Game {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.player = new Player(canvas.width / 2, canvas.height / 2, 20, 0.5);
-        this.obstacle = new Obstacle(canvas.width, 200, 2, 50, canvas.height);
     }
 
-    handleKeyDown(e) {
-        if (e.key === 'ArrowUp' || e.key === ' ') {
-            this.player.jump();
-        }
+    handleclick() {
+        this.player.jump()
     }
 
-    animate(timestamp) {
+    animate() {
         this.player.updatePosition();
-        this.obstacle.move();
-        this.obstacle.reset(this.canvas.width);
-
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.player.draw(this.ctx);
-        this.obstacle.draw(this.ctx);
-
+        
+        for (let i = 0; i < arr.length; i++) {
+            let obstacle = arr[i]
+            this.ctx.fillStyle = 'black'
+            this.ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
+        }
+        
         requestAnimationFrame((timestamp) => this.animate(timestamp));
     }
 
     start() {
-        document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+        document.addEventListener('keypress', () => this.handleclick());
         requestAnimationFrame((timestamp) => this.animate(timestamp));
     }
 }
-
 
 const game = new Game(canvas);
 game.start();
