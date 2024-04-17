@@ -9,7 +9,7 @@ obstacleHeight = 500
 obstacleX = canvas.width
 obstacleY = 0
 
-function e() {
+function addObstacle() {
     let random = obstacleY - obstacleHeight/4 - Math.random()*(obstacleHeight/2)
     let top = {
         x: obstacleX,
@@ -20,6 +20,7 @@ function e() {
     arr.push(top)
 }
 
+let isPaused = false
 class Player {
     constructor(x, y, radius, gravity) {
         this.x = x;
@@ -38,10 +39,13 @@ class Player {
         // Update player's vertical position
         this.y += this.speedY;
 
+
+
         // Prevent player from falling through the ground
-        if (this.y + this.radius > canvas.height) {
-            this.y = canvas.height - this.radius;
+        if (this.y + this.radius+90 > canvas.height) {
+            this.y = canvas.height - this.radius-90;
             this.speedY = 0;
+            isPaused = true
         }
 
         // Prevent player from flying away upwards
@@ -59,7 +63,6 @@ class Player {
     }
 }
 
-
 class Game {
     constructor(canvas) {
         this.canvas = canvas;
@@ -68,7 +71,18 @@ class Game {
     }
 
     handleclick() {
-        this.player.jump()
+        if (isPaused == false) {
+            this.player.jump()
+        } else {
+            document.addEventListener('keypress', (e) => {
+                if (e.key === 'w') {
+                    this.player.y = canvas.height/2
+                    this.player.x = canvas.width/2
+                    this.player.speedY = 0
+                    isPaused = false
+                }
+            })
+        }
     }
 
     animate() {
@@ -81,13 +95,23 @@ class Game {
             this.ctx.fillStyle = 'black'
             this.ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
         }
-        
         requestAnimationFrame((timestamp) => this.animate(timestamp));
     }
 
     start() {
-        document.addEventListener('keypress', () => this.handleclick());
-        requestAnimationFrame((timestamp) => this.animate(timestamp));
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'w' && !isPaused) {
+                this.player.y = canvas.height/2
+                this.player.x = canvas.width/2
+                this.player.speedY = 0
+                document.addEventListener('keypress', (e) => {
+                    if (e.key === ' ') {
+                        this.handleclick()
+                    }
+                });
+                requestAnimationFrame((timestamp) => this.animate(timestamp));
+            }
+        })
     }
 }
 
