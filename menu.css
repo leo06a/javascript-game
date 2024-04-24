@@ -1,0 +1,41 @@
+#container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+body {
+  background-image: url("../images/flappy.gif");
+  background-size: cover;
+}
+
+#start {
+  display: flex;
+  border: solid black;
+  border-radius: 10px;
+  width: 150px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5%;
+  cursor: pointer;
+}
+
+#start:hover {
+  background-color: whitesmoke;
+}
+
+#game {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: xx-large;
+  color: green;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+img {
+  width: 100px;
+  margin-top: 7%;
+}

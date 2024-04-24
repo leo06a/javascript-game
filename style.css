@@ -4,6 +4,29 @@
 }
 
 body {
-  background-image: url("flappy-bird-ezgif.com-crop.gif");
+  background-image: url("images/flappy-bird-ezgif.com-crop.gif");
   background-size: cover;
+}
+
+#text {
+  font-size: xx-large;
+  position: absolute;
+  z-index: 10;
+}
+
+#container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#settings {
+  z-index: 1000;
+  position: absolute;
+  border: solid black;
+  display: none;
+  height: 400px;
+  width: 300px;
+  align-items: center;
+  justify-content: center;
 }
