@@ -4,13 +4,23 @@ canvas.width = window.innerWidth - 50;
 canvas.height = window.innerHeight -5;
 let text = document.getElementById('text')
 
-arr = []
-obstacleWidth = 60
-obstacleHeight = 500
-obstacleX = canvas.width
-obstacleY = 0
+let arr = []
 
-let settings = document.getElementById('settings')
+let obstacleWidth = 60
+let obstacleHeight = 500
+let obstacleX = canvas.width-100
+let obstacleY = 500
+const obsspeed = 2
+
+function moveObstacle() {
+    for (let i = 0; i < arr.length; i++) {
+        let obs = arr[i];
+        obs.x -= obsspeed 
+        
+    }
+}
+
+let settings = document.getElementById('setw tings')
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
@@ -18,25 +28,6 @@ document.addEventListener('keydown', (e) => {
         settings.style.display = 'flex'
     }
 })
-
-
-
-function addObstacle() {
-    let random = obstacleY - obstacleHeight/4 - Math.random()*(obstacleHeight/2)
-    let top = {
-        x: obstacleX,
-        y: random,
-        width: obstacleWidth,
-        height: obstacleHeight,
-    }
-    arr.push(top)
-    for (let i = 0; i < arr.length; i++) {
-        let obstacle = arr[i]
-        c.fillStyle = 'black'
-        c.fillRect(top.x, top.y, top.width, top.height)
-        console.log(obstacle)
-    }
-}
 
 let isPaused = false
 class Player {
@@ -104,11 +95,16 @@ class Game {
     }
 
     animate() {
-        // console.log(this.player)
         this.player.updatePosition();
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.player.draw(this.ctx);
 
+        moveObstacle()
+        for (let i = 0; i < arr.length; i++) {
+            const obstacle = arr[i];
+            this.ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
+            
+        }
 
         requestAnimationFrame(this.animate.bind(this))
     }
@@ -132,5 +128,16 @@ document.addEventListener('keypress', (e) => {
     }
 });
 
-setInterval(addObstacle(), 1);
+setInterval(() => {
+    let randomHeight = Math.random() * (canvas.height - 200) + 50;
+    let obs = {
+        x: obstacleX,
+        y: canvas.height - randomHeight,
+        width: obstacleWidth,
+        height: randomHeight
+    };
+    arr.push(obs)
 
+    console.log(arr)
+
+},1000);
