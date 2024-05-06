@@ -3,24 +3,29 @@ let c = canvas.getContext('2d')
 canvas.width = window.innerWidth - 50;
 canvas.height = window.innerHeight -5;
 let text = document.getElementById('text')
-
-let arr = []
+let isPaused = false
+let arrBottom = []
+let arrTop = []
 
 let obstacleWidth = 60
 let obstacleHeight = 500
 let obstacleX = canvas.width-100
 let obstacleY = 500
-const obsspeed = 2
+const obsspeed = 10
 
 function moveObstacle() {
-    for (let i = 0; i < arr.length; i++) {
-        let obs = arr[i];
+    for (let i = 0; i < arrBottom.length; i++) {
+        let obs = arrBottom[i];
         obs.x -= obsspeed 
         
     }
+    for (let i = 0; i < arrTop.length; i++) {
+        let obs = arrTop[i];
+        obs.x -= obsspeed
+    }
 }
 
-let settings = document.getElementById('setw tings')
+let settings = document.getElementById('settings')
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
@@ -29,7 +34,6 @@ document.addEventListener('keydown', (e) => {
     }
 })
 
-let isPaused = false
 class Player {
     constructor(x, y, radius, gravity) {
         this.x = x;
@@ -44,18 +48,9 @@ class Player {
     }
 
     updatePosition() {
-        this.speedY += this.gravity;
+        this.speedY += this.gravity;    
         // Update player's vertical position
         this.y += this.speedY;
-
-
-
-        // Prevent player from falling through the ground
-        if (this.y + this.radius+90 > canvas.height) {
-            this.y = canvas.height - this.radius-90;
-            this.speedY = 0;
-            isPaused = true
-        }
 
         // Prevent player from flying away upwards
         if (this.y - this.radius < 0) {
@@ -100,25 +95,42 @@ class Game {
         this.player.draw(this.ctx);
 
         moveObstacle()
-        for (let i = 0; i < arr.length; i++) {
-            const obstacle = arr[i];
-            this.ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
+        for (let i = 0; i < arrBottom.length; i++) {
+            const obstacleB = arrBottom[i];
+            this.ctx.fillRect(obstacleB.x, obstacleB.y, obstacleB.width, obstacleB.height)
             
         }
 
+        for (let i = 0; i < arrTop.length; i++) {
+            const obstacleT = arrTop[i];
+            this.ctx.fillRect(obstacleT.x, 0, obstacleT.width, obstacleT.height)
+        }
+
+
+        // Prevent player from falling through the ground
+        if (this.player.y + this.player.radius+60 > canvas.height) {
+            this.player.y = canvas.height - this.player.radius-60;
+            this.player.speedY = 0;
+            isPaused = true
+            let over = document.getElementById("gameOver")
+            over.style.display = 'flex'
+            
+            // document.body.style.backgroundImage = "url('flappy2.gif')";
+        }
+
         requestAnimationFrame(this.animate.bind(this))
+        
     }
 }
 
 const game = new Game(canvas);
 
 document.addEventListener('keypress', (e) => {
-    if (e.key === 'w' && !isPaused) {
+    if (e.key === 'w' && !isPaused) { 
         game.player.y = canvas.height/2
         game.player.x = canvas.width/2
         game.player.speedY = 0
-        game.animate();
-        
+        game.animate();       
     }
 })
 
@@ -130,14 +142,26 @@ document.addEventListener('keypress', (e) => {
 
 setInterval(() => {
     let randomHeight = Math.random() * (canvas.height - 200) + 50;
-    let obs = {
+    let obsGap = 140
+
+    let obsBottom = {
         x: obstacleX,
         y: canvas.height - randomHeight,
         width: obstacleWidth,
         height: randomHeight
     };
-    arr.push(obs)
+    arrBottom.push(obsBottom)
 
-    console.log(arr)
+    console.log(arrTop)
+
+    let obsTopHeight = canvas.height - obsBottom.height - obsGap;
+    let obsTop = {
+        x: obstacleX,
+        y: 0,
+        width: obstacleWidth,
+        height: obsTopHeight
+    };
+
+    arrTop.push(obsTop)
 
 },1000);

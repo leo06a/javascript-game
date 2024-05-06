@@ -30,3 +30,17 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+#gameOver {
+  position: absolute;
+  z-index: 1000;
+  display: none;
+  width: 200px;
+  height: 200px;
+  margin-top: 200px;
+  margin-left: 650px;
+  align-items: center;
+  justify-content: center;
+  color: red;
+  font-size: x-large;
+}
