@@ -8,17 +8,19 @@
     <title>Canvas Game</title>
   </head>
   <body>
-    <nav id="gameOver">
-      <ul>
-        <a>Game over</a>
-      </ul>
-    </nav>
     <div id="text">0</div>
     <div id="container">
       <canvas id="gameCanvas"></canvas>
       <div id="settings">
+        <h1>Settings</h1>
         <a href="index.html">resume</a>
         <a href="menu.html">menu</a>
+        <label>difficulty: </label>
+        <select id="difficulty">
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+        </select>
       </div>
     </div>
   </body>

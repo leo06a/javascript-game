@@ -11,7 +11,21 @@ let obstacleWidth = 60
 let obstacleHeight = 500
 let obstacleX = canvas.width-100
 let obstacleY = 500
+
 const obsspeed = 10
+
+const difficulties = {
+    easy: {
+        obsspeed: 5,
+    },
+    medium: {
+        obsspeed: 10,
+    },
+    hard: {
+        obsspeed: 15,
+    }
+};
+
 
 function moveObstacle() {
     for (let i = 0; i < arrBottom.length; i++) {
@@ -29,10 +43,14 @@ let settings = document.getElementById('settings')
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        isPaused = true
-        settings.style.display = 'flex'
+        if (settings.style.display === 'none') {
+            settings.style.display = 'flex'
+        } else {
+            settings.style.display = 'none'
+        }
     }
 })
+
 
 class Player {
     constructor(x, y, radius, gravity) {
@@ -94,11 +112,15 @@ class Game {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.player.draw(this.ctx);
 
+        const difficultySelect = document.getElementById('difficulty');
+        difficultySelect.addEventListener('change', function() {
+        obsspeed = difficulties[this.value].obsspeed; // Update obstacle speed
+        });
+
         moveObstacle()
         for (let i = 0; i < arrBottom.length; i++) {
             const obstacleB = arrBottom[i];
             this.ctx.fillRect(obstacleB.x, obstacleB.y, obstacleB.width, obstacleB.height)
-            
         }
 
         for (let i = 0; i < arrTop.length; i++) {
@@ -107,18 +129,21 @@ class Game {
         }
 
 
+
+
         // Prevent player from falling through the ground
         if (this.player.y + this.player.radius+60 > canvas.height) {
             this.player.y = canvas.height - this.player.radius-60;
             this.player.speedY = 0;
             isPaused = true
-            let over = document.getElementById("gameOver")
-            over.style.display = 'flex'
-            
-            // document.body.style.backgroundImage = "url('flappy2.gif')";
+            document.getElementById('settings').style.display = 'flex'
+            document.body.style.backgroundImage = "url('./images/background.PNG')"
         }
 
-        requestAnimationFrame(this.animate.bind(this))
+        if (!isPaused) {
+            requestAnimationFrame(this.animate.bind(this))
+        }
+
         
     }
 }
@@ -141,27 +166,30 @@ document.addEventListener('keypress', (e) => {
 });
 
 setInterval(() => {
-    let randomHeight = Math.random() * (canvas.height - 200) + 50;
-    let obsGap = 140
-
-    let obsBottom = {
-        x: obstacleX,
-        y: canvas.height - randomHeight,
-        width: obstacleWidth,
-        height: randomHeight
-    };
-    arrBottom.push(obsBottom)
-
-    console.log(arrTop)
-
-    let obsTopHeight = canvas.height - obsBottom.height - obsGap;
-    let obsTop = {
-        x: obstacleX,
-        y: 0,
-        width: obstacleWidth,
-        height: obsTopHeight
-    };
-
-    arrTop.push(obsTop)
-
+    if (!isPaused) {
+        let randomHeight = Math.random() * (canvas.height - 200) + 50;
+        let obsGap = 140
+        
+        let obsBottom = {
+            x: obstacleX,
+            y: canvas.height - randomHeight,
+            width: obstacleWidth,
+            height: randomHeight
+        };
+        arrBottom.push(obsBottom)
+        
+        console.log(arrTop)
+        
+        let obsTopHeight = canvas.height - obsBottom.height - obsGap;
+        let obsTop = {
+            x: obstacleX,
+            y: 0,
+            width: obstacleWidth,
+            height: obsTopHeight
+        };
+        
+        arrTop.push(obsTop)    
+    } else {
+        obsspeed = 0
+    }
 },1000);
