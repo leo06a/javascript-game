@@ -2,8 +2,8 @@ const canvas = document.getElementById('gameCanvas');
 let c = canvas.getContext('2d')
 canvas.width = window.innerWidth - 50;
 canvas.height = window.innerHeight -5;
-let text = document.getElementById('text')
 let isPaused = false
+
 let arrBottom = []
 let arrTop = []
 
@@ -12,7 +12,7 @@ let obstacleHeight = 500
 let obstacleX = canvas.width-100
 let obstacleY = 500
 
-const obsspeed = 10
+let obsspeed = 10
 
 const difficulties = {
     easy: {
@@ -38,19 +38,6 @@ function moveObstacle() {
         obs.x -= obsspeed
     }
 }
-
-let settings = document.getElementById('settings')
-
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        if (settings.style.display === 'none') {
-            settings.style.display = 'flex'
-        } else {
-            settings.style.display = 'none'
-        }
-    }
-})
-
 
 class Player {
     constructor(x, y, radius, gravity) {
@@ -93,7 +80,7 @@ class Game {
     }
 
     handleclick() {
-        if (isPaused == false) {
+        if (!isPaused) {
             this.player.jump()
         } else {
             document.addEventListener('keypress', (e) => {
@@ -107,29 +94,46 @@ class Game {
         }
     }
 
+    checkCollision(player, obstacle) {
+        if (
+            player.x + player.radius > obstacle.x && 
+            player.x - player.radius < obstacle.x + obstacle.width && 
+            player.y + player.radius > obstacle.y && 
+            player.y - player.radius < obstacle.y + obstacle.height
+        ) {
+            return true;
+        }
+        return false;
+    }
+
     animate() {
         this.player.updatePosition();
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.player.draw(this.ctx);
 
-        const difficultySelect = document.getElementById('difficulty');
-        difficultySelect.addEventListener('change', function() {
-        obsspeed = difficulties[this.value].obsspeed; // Update obstacle speed
-        });
+        // const difficultySelect = document.getElementById('difficulty');
+        // difficultySelect.addEventListener('change', function() {
+        // obsspeed = difficulties[this.value].obsspeed; 
+        // });
 
         moveObstacle()
         for (let i = 0; i < arrBottom.length; i++) {
             const obstacleB = arrBottom[i];
             this.ctx.fillRect(obstacleB.x, obstacleB.y, obstacleB.width, obstacleB.height)
+            if (this.checkCollision(this.player, obstacleB)) {
+                isPaused = true
+                console.log('hit')
+            }
         }
 
         for (let i = 0; i < arrTop.length; i++) {
             const obstacleT = arrTop[i];
             this.ctx.fillRect(obstacleT.x, 0, obstacleT.width, obstacleT.height)
+            if (this.checkCollision(this.player, obstacleT)) {
+                isPaused = true
+                console.log('hit')
+            }
         }
-
-
-
 
         // Prevent player from falling through the ground
         if (this.player.y + this.player.radius+60 > canvas.height) {
@@ -143,8 +147,6 @@ class Game {
         if (!isPaused) {
             requestAnimationFrame(this.animate.bind(this))
         }
-
-        
     }
 }
 
@@ -165,8 +167,22 @@ document.addEventListener('keypress', (e) => {
     }
 });
 
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        let settings = document.getElementById('settings')
+        if (settings.style.display === 'none') {
+            settings.style.display = 'flex'
+            isPaused = true
+        } else {
+            settings.style.display = 'none'
+            isPaused = false
+        }
+    }
+})
+
 setInterval(() => {
     if (!isPaused) {
+        document.getElementById('text').innerHTML = parseInt(text.innerHTML) + 1
         let randomHeight = Math.random() * (canvas.height - 200) + 50;
         let obsGap = 140
         
@@ -176,6 +192,7 @@ setInterval(() => {
             width: obstacleWidth,
             height: randomHeight
         };
+        
         arrBottom.push(obsBottom)
         
         console.log(arrTop)
