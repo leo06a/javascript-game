@@ -8,7 +8,7 @@ body {
   background-size: cover;
 }
 
-#text {
+#score {
   font-size: xx-large;
   position: absolute;
   z-index: 10;
