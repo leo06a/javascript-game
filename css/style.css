@@ -4,13 +4,15 @@
 }
 
 body {
-  background-image: url("images/flappy-bird-ezgif.com-crop.gif");
+  background-image: url("../images/background.gif");
   background-size: cover;
 }
 
 #score {
   font-size: xx-large;
   position: absolute;
+  top: 0;
+  left: 10px;
   z-index: 10;
 }
 
@@ -30,6 +32,13 @@ body {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+
+#startOver {
+  background-color: green;
+  width: 130px;
+  height: 40px;
+  font-size: x-large;
 }
 
 #difficulty,
