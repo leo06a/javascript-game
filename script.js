@@ -3,23 +3,30 @@ const playerImage = new Image();
 playerImage.src = '../images/bird.png';
 let c = canvas.getContext('2d')
 canvas.width = window.innerWidth - 50;
-canvas.height = window.innerHeight -5;
+canvas.height = window.innerHeight - 5;
 let isPaused = false
 let arrBottom = []
 let arrTop = []
 
 let obstacleWidth = 60
 let obstacleHeight = 500
-let obstacleX = canvas.width-100
+let obstacleX = canvas.width - 100
 let obstacleY = 500
 
 let obsspeed = 10
 
+let score = 0
+
 function moveObstacle() {
     for (let i = 0; i < arrBottom.length; i++) {
         let obs = arrBottom[i];
-        obs.x -= obsspeed 
-        
+        obs.x -= obsspeed
+        // Check if the player has passed the obstacle
+        if (obs.x + obs.width < game.player.x && !obs.passed) {
+            obs.passed = true;
+            score++;
+            document.getElementById("score").innerHTML = score;
+        }
     }
     for (let i = 0; i < arrTop.length; i++) {
         let obs = arrTop[i];
@@ -48,7 +55,7 @@ class Player {
     }
 
     updatePosition() {
-        this.speedY += this.gravity    
+        this.speedY += this.gravity
         // Update player's vertical position
         this.y += this.speedY
 
@@ -58,16 +65,17 @@ class Player {
             this.speedY = 0
         }
     }
+
     draw(ctx) {
         if (this.flap) {
-            ctx.drawImage(this.image, this.currentFrame, 0, this.frameWidth, this.frameHeight, this.x-this.radius-10, this.y-this.radius-10, this.radius * 3, this.radius * 3);
+            ctx.drawImage(this.image, this.currentFrame, 0, this.frameWidth, this.frameHeight, this.x - this.radius - 10, this.y - this.radius - 10, this.radius * 3, this.radius * 3);
             this.currentFrame = this.currentFrame + 16;
             if (this.currentFrame >= this.frames * this.frameWidth) {
                 this.currentFrame = 0
                 this.flap = false
             }
         } else {
-            ctx.drawImage(this.image, this.currentFrame, 0, this.frameWidth, this.frameHeight, this.x-this.radius-10, this.y-this.radius-10, this.radius * 3, this.radius * 3);
+            ctx.drawImage(this.image, this.currentFrame, 0, this.frameWidth, this.frameHeight, this.x - this.radius - 10, this.y - this.radius - 10, this.radius * 3, this.radius * 3);
         }
     }
 }
@@ -82,14 +90,14 @@ class Game {
     handleclick() {
         if (!isPaused) {
             this.player.jump()
-        } 
+        }
     }
 
     checkCollision(player, obstacle) {
         if (
-            player.x + player.radius > obstacle.x && 
-            player.x - player.radius < obstacle.x + obstacle.width && 
-            player.y + player.radius > obstacle.y && 
+            player.x + player.radius > obstacle.x &&
+            player.x - player.radius < obstacle.x + obstacle.width &&
+            player.y + player.radius > obstacle.y &&
             player.y - player.radius < obstacle.y + obstacle.height
         ) {
             return true
@@ -109,7 +117,7 @@ class Game {
             const obstacleB = arrBottom[i];
             this.ctx.fillRect(obstacleB.x, obstacleB.y, obstacleB.width, obstacleB.height)
             if (this.checkCollision(this.player, obstacleB)) {
-                // isPaused = true
+                isPaused = true
                 document.body.style.backgroundImage = "url('./images/background.PNG')"
             }
         }
@@ -118,14 +126,14 @@ class Game {
             const obstacleT = arrTop[i];
             this.ctx.fillRect(obstacleT.x, 0, obstacleT.width, obstacleT.height)
             if (this.checkCollision(this.player, obstacleT)) {
-                // isPaused = true
+                isPaused = true
                 document.body.style.backgroundImage = "url('./images/background.PNG')"
             }
         }
 
         // Prevent player from falling through the ground
-        if (this.player.y + this.player.radius+60 > canvas.height) {
-            this.player.y = canvas.height - this.player.radius-60;
+        if (this.player.y + this.player.radius + 60 > canvas.height) {
+            this.player.y = canvas.height - this.player.radius - 60;
             this.player.speedY = 0;
             isPaused = true
             document.getElementById('settings').style.display = 'flex'
@@ -156,7 +164,7 @@ document.addEventListener('keydown', (e) => {
             game.animate()
         }
     }
-})  
+})
 
 const difficulties = {
     easy: {
@@ -172,7 +180,7 @@ const difficulties = {
 
 let obsGap = 200
 
-let selectElement = document.getElementById('difficulty')   
+let selectElement = document.getElementById('difficulty')
 selectElement.addEventListener('change', (event) => {
     let selectedOption = event.target.value
     console.log('Selected option:', selectedOption)
@@ -185,7 +193,7 @@ selectElement.addEventListener('change', (event) => {
     } else if (selectedOption === 'hard') {
         obsGap = difficulties.hard.obsGap
         console.log(obsGap)
-    } 
+    }
 })
 
 this.spawnObstacle = setInterval(() => {
@@ -196,7 +204,8 @@ this.spawnObstacle = setInterval(() => {
             x: obstacleX,
             y: canvas.height - randomHeight,
             width: obstacleWidth,
-            height: randomHeight
+            height: randomHeight,
+            passed: false
         };
 
         arrBottom.push(obsBottom);
@@ -207,25 +216,17 @@ this.spawnObstacle = setInterval(() => {
             x: obstacleX,
             y: 0,
             width: obstacleWidth,
-            height: obsTopHeight
+            height: obsTopHeight,
+            passed: false
         };
 
         arrTop.push(obsTop);
-    } 
+    }
 }, 1000);
 
-let score = 0
-
-function increaseScore() {
-    score++;
-    document.getElementById("score").innerHTML = score;
-}
-
-setInterval(increaseScore, 2000);
-
 const game = new Game(canvas)
-game.player.y = canvas.height/2
-game.player.x = canvas.width/2
+game.player.y = canvas.height / 2
+game.player.x = canvas.width / 2
 game.player.speedY = 0
 if (!isPaused) {
     game.animate()
